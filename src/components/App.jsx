@@ -4,7 +4,7 @@ import { Searchbar } from './searchbar/Searchbar';
 import { ImageGallery } from 'components/imagegallery/ImageGallery';
 import { ApiByPhoto } from 'servise/api';
 import { Loader } from './loader/Loader';
-import { Modal } from 'modal/Modal';
+import { Modal } from 'components/modal/Modal';
 
 export class App extends React.Component {
   state = {
@@ -18,12 +18,6 @@ export class App extends React.Component {
     modalContent: null,
   };
 
-  // async componentDidMount() {
-  //   // const { quary } = this.state;
-  //   const { hits } = await ApiByPhoto({});
-  //   this.setState({ items: hits });
-  // }
-
   async componentDidUpdate(_, prevState) {
     const { page, quary } = this.state;
     if (prevState.page !== page || prevState.quary !== quary) {
@@ -34,7 +28,7 @@ export class App extends React.Component {
           items: [...prev.items, ...hits],
           totalItems: total,
         }));
-        console.log(this.state.loading);
+        
       } catch (error) {
         this.setState({ error });
       } finally {
@@ -47,7 +41,9 @@ export class App extends React.Component {
     this.setState({ quary, items: [], page: 1 });
   };
 
-  handlerLoadMore = () => {
+  handlerLoadMore = e => {
+    console.log(e);
+    e.preventDefault();
     this.setState(prev => ({ page: prev.page + 1 }));
   };
   handlerModal = () => {
@@ -61,7 +57,6 @@ export class App extends React.Component {
   handlerNextPost = id => {
     const { items } = this.state;
     const item = items.findIndex(modalContent => modalContent.id === id);
-    console.log(item);
     if (item === items.length - 1) {
       this.setState({ modalContent: items[0] });
     } else {
@@ -72,9 +67,8 @@ export class App extends React.Component {
   handlerPrevPost = id => {
     const { items } = this.state;
     const item = items.findIndex(modalContent => modalContent.id === id);
-    console.log(item.length);
     if (!item) {
-      this.setState({ modalContent: items[items.length-1]});
+      this.setState({ modalContent: items[items.length - 1] });
     } else {
       this.setState({ modalContent: items[item - 1] });
     }

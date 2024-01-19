@@ -1,4 +1,4 @@
-import s from './ImageGalleryItem.module.css'
+import s from './ImageGalleryItem.module.css';
 export const ImageGalleryItem = ({ item, handlerModalOpen }) => {
   return (
     <li className={s.galleryItem} onClick={() => handlerModalOpen(item)}>
@@ -6,7 +6,3 @@ export const ImageGalleryItem = ({ item, handlerModalOpen }) => {
     </li>
   );
 };
-
-
-
-
