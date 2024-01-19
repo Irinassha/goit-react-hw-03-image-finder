@@ -1,15 +1,15 @@
 import { ImageGalleryItem } from 'components/imagegalleryitem/ImageGalleryItem';
 import s from './ImageGallery.module.css'
 
-export const ImageGallery = ({ hits }) => {
+export const ImageGallery = ({ hits, handlerModalOpen }) => {
   return (
     <ul className={s.gallery}>
-      {hits.map(({id, webformatURL, tags}) => {
+      {hits.map((item) => {
         return (
           <ImageGalleryItem
-            key={id}
-            images={webformatURL}
-            p={tags}
+            key={item.id}
+            item={item}
+            handlerModalOpen={handlerModalOpen}
           />
         );
       })}

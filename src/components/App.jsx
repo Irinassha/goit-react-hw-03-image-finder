@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from './button/Button';
-import { Modal } from './modal/Modal';
 import { Searchbar } from './searchbar/Searchbar';
 import { ImageGallery } from 'components/imagegallery/ImageGallery';
 import { ApiByPhoto } from 'servise/api';
 import { Loader } from './loader/Loader';
+import { Modal } from 'modal/Modal';
 
 export class App extends React.Component {
   state = {
@@ -14,6 +14,8 @@ export class App extends React.Component {
     loading: false,
     error: null,
     totalItems: 0,
+    isOpen: false,
+    modalContent: null,
   };
 
   // async componentDidMount() {
@@ -48,9 +50,38 @@ export class App extends React.Component {
   handlerLoadMore = () => {
     this.setState(prev => ({ page: prev.page + 1 }));
   };
+  handlerModal = () => {
+    this.setState(prev => ({ isOpen: !prev.isOpen }));
+  };
+  handlerModalOpen = content => {
+    console.log(content);
+    this.setState({ modalContent: content, isOpen: true });
+  };
+
+  handlerNextPost = id => {
+    const { items } = this.state;
+    const item = items.findIndex(modalContent => modalContent.id === id);
+    console.log(item);
+    if (item === items.length - 1) {
+      this.setState({ modalContent: items[0] });
+    } else {
+      this.setState({ modalContent: items[item + 1] });
+    }
+  };
+
+  handlerPrevPost = id => {
+    const { items } = this.state;
+    const item = items.findIndex(modalContent => modalContent.id === id);
+    console.log(item.length);
+    if (!item) {
+      this.setState({ modalContent: items[items.length-1]});
+    } else {
+      this.setState({ modalContent: items[item - 1] });
+    }
+  };
 
   render() {
-    const { items, loading, totalItems } = this.state;
+    const { items, loading, totalItems, isOpen, modalContent } = this.state;
     return (
       <div
         style={{
@@ -63,11 +94,22 @@ export class App extends React.Component {
         }}
       >
         <Searchbar search={this.handlerSearch} />
-        {loading ? <Loader /> : <ImageGallery hits={items} />}
+        {loading ? (
+          <Loader />
+        ) : (
+          <ImageGallery hits={items} handlerModalOpen={this.handlerModalOpen} />
+        )}
         {items && items.length < totalItems && (
           <Button loadMore={this.handlerLoadMore} />
         )}
-        <Modal />
+        {isOpen && (
+          <Modal
+            modalContent={modalContent}
+            close={this.handlerModal}
+            handlerNextPost={this.handlerNextPost}
+            handlerPrevPost={this.handlerPrevPost}
+          />
+        )}
       </div>
     );
   }
