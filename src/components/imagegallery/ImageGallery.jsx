@@ -4,13 +4,12 @@ import s from './ImageGallery.module.css'
 export const ImageGallery = ({ hits }) => {
   return (
     <ul className={s.gallery}>
-      {hits.map(hits => {
-        console.log(hits.tags);
+      {hits.map(({id, webformatURL, tags}) => {
         return (
           <ImageGalleryItem
-            key={hits.id}
-            images={hits.webformatURL}
-            p={hits.tags}
+            key={id}
+            images={webformatURL}
+            p={tags}
           />
         );
       })}

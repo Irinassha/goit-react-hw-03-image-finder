@@ -1,33 +1,59 @@
-import React from "react";
-import { Button } from "./button/Button";
-import { Modal } from "./modal/Modal";
-import { Searchbar } from "./searchbar/Searchbar";
-import axios from 'axios';
-import { ImageGallery } from "imagegallery/ImageGallery";
-
-axios.defaults.baseURL = 'https://pixabay.com';
-
+import React from 'react';
+import { Button } from './button/Button';
+import { Modal } from './modal/Modal';
+import { Searchbar } from './searchbar/Searchbar';
+import { ImageGallery } from 'components/imagegallery/ImageGallery';
+import { ApiByPhoto } from 'servise/api';
+import { Loader } from './loader/Loader';
 
 export class App extends React.Component {
   state = {
-    hits: [],
+    items: [],
+    page: 1,
+    quary: '',
+    loading: false,
+    error: null,
+    totalItems: 0,
   };
 
-  async componentDidMount() {
-  
-    const { data } = await axios.get(
-      '/api/?key=41261447-8e6e35c805284eb5c4b03f22e&q=cars&image_type=photo'
-    );
-    console.log(data)
-    this.setState({ hits: data.hits});
+  // async componentDidMount() {
+  //   // const { quary } = this.state;
+  //   const { hits } = await ApiByPhoto({});
+  //   this.setState({ items: hits });
+  // }
+
+  async componentDidUpdate(_, prevState) {
+    const { page, quary } = this.state;
+    if (prevState.page !== page || prevState.quary !== quary) {
+      try {
+        this.setState({ loading: true, error: null });
+        const { hits, total } = await ApiByPhoto({ quary, page });
+        this.setState(prev => ({
+          items: [...prev.items, ...hits],
+          totalItems: total,
+        }));
+        console.log(this.state.loading);
+      } catch (error) {
+        this.setState({ error });
+      } finally {
+        this.setState({ loading: false });
+      }
+    }
   }
 
+  handlerSearch = quary => {
+    this.setState({ quary, items: [], page: 1 });
+  };
+
+  handlerLoadMore = () => {
+    this.setState(prev => ({ page: prev.page + 1 }));
+  };
+
   render() {
+    const { items, loading, totalItems } = this.state;
     return (
       <div
         style={{
-          // height: '100vh',
-
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -36,11 +62,13 @@ export class App extends React.Component {
           color: '#010101',
         }}
       >
-        <Searchbar />
-       <ImageGallery hits={this.state.hits}/>
-        <Button />
+        <Searchbar search={this.handlerSearch} />
+        {loading ? <Loader /> : <ImageGallery hits={items} />}
+        {items && items.length < totalItems && (
+          <Button loadMore={this.handlerLoadMore} />
+        )}
         <Modal />
       </div>
     );
   }
-};
+}
