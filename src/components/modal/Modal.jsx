@@ -40,6 +40,7 @@ export class Modal extends React.Component {
 
         <div className={s.Modal}>
           <img
+            onClick={(e) => e.stopPropagation()}
             className={s.img}
             src={modalContent.largeImageURL}
             alt={modalContent.tags}
