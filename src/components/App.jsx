@@ -42,10 +42,10 @@ export class App extends React.Component {
   };
 
   handlerLoadMore = e => {
-    console.log(e);
     e.preventDefault();
     this.setState(prev => ({ page: prev.page + 1 }));
   };
+
   handlerModal = () => {
     this.setState(prev => ({ isOpen: !prev.isOpen }));
   };
@@ -93,6 +93,7 @@ export class App extends React.Component {
         ) : (
           <ImageGallery hits={items} handlerModalOpen={this.handlerModalOpen} />
         )}
+        
         {items && items.length < totalItems && (
           <Button loadMore={this.handlerLoadMore} />
         )}
